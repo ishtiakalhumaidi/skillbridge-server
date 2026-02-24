@@ -1,0 +1,10 @@
+model Category {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+
+  tutors   TutorSubject[]
+  bookings Booking[]
+
+  createdAt DateTime @default(now())
+}

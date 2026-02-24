@@ -1,14 +1,19 @@
 model Tutor {
-    id               String   @id @default(uuid())
-    user_id          String   @db.VarChar(255)
-    bio              String?  @db.Text
-    hourly_rate      Int
-    experience_years Int      @default(0)
-    education        String?
-    isVerified       Boolean  @default(false)
-    rating_avg       Float    @default(0.0)
-    total_reviews    Int      @default(0)
-    created_at       DateTime @default(now())
+    id          String  @id @default(uuid())
+  userId      String  @unique
+  bio         String?
+  hourlyRate  Float
+  experience  Int?
+
+//   user        User @relation(fields: [userId], references: [id])
+
+  subjects     TutorSubject[]
+  availability Availability[]
+  reviews      Review[]
+
+  ratingAvg Float @default(0)
+
+  createdAt DateTime @default(now())
 
     // user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
