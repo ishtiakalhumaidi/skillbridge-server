@@ -8,5 +8,5 @@ model Availability {
 
   isBooked Boolean @default(false)
 
-  tutor Tutor @relation(fields: [tutorId], references: [id])
+  tutor Tutor @relation(fields: [tutorId], references: [id], onDelete: Cascade)
 }

@@ -1,8 +1,8 @@
 model Booking {
-  id        String @id @default(uuid())
+  id String @id @default(uuid())
 
-  studentId String
-  tutorId   String
+  studentId  String
+  tutorId    String
   categoryId String
 
   date      DateTime
@@ -11,9 +11,9 @@ model Booking {
 
   status BookingStatus @default(CONFIRMED)
 
-//   student User @relation("StudentBookings", fields: [studentId], references: [id])
-//   tutor   User @relation("TutorBookings", fields: [tutorId], references: [id])
-  category Category @relation(fields: [categoryId], references: [id])
+  student  String
+  tutor    String
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   review Review?
 

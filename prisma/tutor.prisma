@@ -1,11 +1,11 @@
 model Tutor {
-    id          String  @id @default(uuid())
-  userId      String  @unique
-  bio         String?
-  hourlyRate  Float
-  experience  Int?
+  id         String  @id @default(uuid())
+  userId     String  @unique
+  bio        String?
+  hourlyRate Float
+  experience Int?
 
-//   user        User @relation(fields: [userId], references: [id])
+  user String
 
   subjects     TutorSubject[]
   availability Availability[]
@@ -14,6 +14,4 @@ model Tutor {
   ratingAvg Float @default(0)
 
   createdAt DateTime @default(now())
-
-    // user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
