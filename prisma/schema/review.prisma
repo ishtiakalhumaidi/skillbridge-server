@@ -9,8 +9,7 @@ model Review {
   comment String?
 
   booking Booking @relation(fields: [bookingId], references: [id])
-  student String
-  tutor   Tutor @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutor   Tutor   @relation(fields: [tutorId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 }

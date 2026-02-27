@@ -4,12 +4,12 @@ model Tutor {
   bio        String?
   hourlyRate Float
   experience Int?
-
-  user String
+  isFeatured Boolean @default(false)
 
   subjects     TutorSubject[]
   availability Availability[]
   reviews      Review[]
+  bookings     Booking[]
 
   ratingAvg Float @default(0)
 

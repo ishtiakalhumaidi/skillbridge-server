@@ -6,6 +6,7 @@ model TutorSubject {
 
   tutor      Tutor @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   category   Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
 
   @@unique([tutorId, categoryId])
 }
