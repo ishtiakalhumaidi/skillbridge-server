@@ -3,6 +3,7 @@ import express, { type Application } from "express";
 import { auth } from "./lib/auth";
 import cors from "cors";
 import { tutorRouter } from "./modules/tutor/tutor.route";
+import { categoryRouter } from "./modules/category/category.route";
 
 const app: Application = express();
 app.use(
@@ -16,6 +17,7 @@ app.use(express.json());
 app.all("/api/auth/{*any}", toNodeHandler(auth));
 
 app.use("/api/v1/tutors", tutorRouter);
+app.use("/api/v1/categories", categoryRouter);
 
 app.get("/", (req, res) => {
   res.send("SkillBridge web is cooking...");
