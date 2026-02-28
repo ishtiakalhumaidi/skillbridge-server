@@ -10,7 +10,7 @@ const createBooking = async (
       where: { id: payload.availabilityId },
     });
 
-    // 2. Prevent double-booking
+
     if (slot.isBooked) {
       throw new Error("This time slot has already been booked by another student.");
     }
@@ -37,7 +37,7 @@ const createBooking = async (
 };
 
 const getMyBookings = async (userId: string) => {
-  // A user might be a student, or they might be a tutor. We need to check both.
+  
   const tutorProfile = await prisma.tutor.findUnique({
     where: { userId },
   });

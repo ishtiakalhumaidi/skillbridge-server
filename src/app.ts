@@ -6,6 +6,8 @@ import { tutorRouter } from "./modules/tutor/tutor.route";
 import { categoryRouter } from "./modules/category/category.route";
 import { availabilityRouter } from "./modules/availability/availability.route";
 import { bookingRouter } from "./modules/booking/booking.router";
+import { tutorSubjectRouter } from "./modules/tutorSubject/tutorSubject.route";
+import { reviewRouter } from "./modules/review/review.route";
 
 const app: Application = express();
 app.use(
@@ -22,6 +24,8 @@ app.use("/api/v1/tutors", tutorRouter);
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/availability", availabilityRouter);
 app.use("/api/v1/bookings", bookingRouter);
+app.use("/api/v1/tutor-subjects", tutorSubjectRouter);
+app.use("/api/v1/reviews", reviewRouter);
 
 app.get("/", (req, res) => {
   res.send("SkillBridge web is cooking...");
