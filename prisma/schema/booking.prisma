@@ -1,7 +1,7 @@
 model Booking {
   id String @id @default(uuid())
 
-  studentId  String // Plain string, NO relation to User
+  studentId  String 
   tutorId    String
   categoryId String
 
