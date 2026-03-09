@@ -7,8 +7,8 @@ This is the backend server for **SkillBridge**, a full-stack web application tha
 ## 🔗 Project Links
 
 - **Frontend GitHub Repository:** []
-- **Live Website:** 
-- **Backend Live API:**  [https://skillbridge-server-xi.vercel.app/]
+- **Live Website:**
+- **Backend Live API:** [https://skillbridge-server-xi.vercel.app/](https://skillbridge-server-xi.vercel.app/)
 
 ---
 
