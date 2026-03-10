@@ -3,10 +3,11 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 
 export const auth = betterAuth({
+  baseURL: process.env.SERVER_URL || "https://skillbridge-server-xi.vercel.app",
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  trustedOrigins: ["http://localhost:3000", "https://skillbridge.vercel.app"],
+  trustedOrigins: ["http://localhost:3000"],
   user: {
     additionalFields: {
       role: {
