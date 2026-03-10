@@ -66,12 +66,10 @@ const updateUserStatus = async (
     }
 
     if (req.user?.id === id) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "You cannot change your own admin status.",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "You cannot change your own admin status.",
+      });
     }
 
     const result = await adminService.updateUserStatus(
@@ -115,10 +113,45 @@ const getAllBookings = async (
     next(error);
   }
 };
+const updateUserRole = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
 
+    if (!role) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Role is required." });
+    }
+
+    if (req.user?.id === id) {
+      return res.status(403).json({
+        success: false,
+        message: "You cannot change your own role.",
+      });
+    }
+    const result = await adminService.updateUserRole(
+      id as string,
+      role as string,
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `User role updated to ${role} successfully.`,
+      data: result,
+    });
+  } catch (error: any) {
+    next(error);
+  }
+};
 export const adminController = {
   getPlatformStats,
   getAllUsers,
   updateUserStatus,
   getAllBookings,
+  updateUserRole,
 };

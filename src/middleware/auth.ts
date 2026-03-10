@@ -2,7 +2,6 @@ import { type NextFunction, type Request, type Response } from "express";
 import { auth as betterAuth } from "../lib/auth";
 
 export enum UserRole {
-  USER = "USER",
   ADMIN = "ADMIN",
   TUTOR = "TUTOR",
   STUDENT = "STUDENT",
@@ -42,7 +41,9 @@ const auth = (...roles: UserRole[]) => {
         emailVerified: session.user.emailVerified,
       };
 
-      if (roles.length && !roles.includes(req.user.role as UserRole)) {
+      const userRole = session.user.role.toUpperCase() as UserRole;
+
+      if (roles.length && !roles.includes(userRole)) {
         return res.status(403).json({
           success: false,
           message:

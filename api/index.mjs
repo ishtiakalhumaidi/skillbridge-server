@@ -21,7 +21,7 @@ var config = {
   "clientVersion": "7.4.1",
   "engineVersion": "55ae170b1ced7fc6ed07a15f110549408c501bb3",
   "activeProvider": "postgresql",
-  "inlineSchema": 'model User {\n  id            String    @id\n  name          String\n  email         String\n  emailVerified Boolean   @default(false)\n  image         String?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  sessions      Session[]\n  accounts      Account[]\n\n  role   String  @default("USER")\n  phone  String?\n  status String? @default("ACTIVE")\n\n  @@unique([email])\n  @@map("user")\n}\n\nmodel Session {\n  id        String   @id\n  expiresAt DateTime\n  token     String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  ipAddress String?\n  userAgent String?\n  userId    String\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([token])\n  @@index([userId])\n  @@map("session")\n}\n\nmodel Account {\n  id                    String    @id\n  accountId             String\n  providerId            String\n  userId                String\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n\n  @@index([userId])\n  @@map("account")\n}\n\nmodel Verification {\n  id         String   @id\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@index([identifier])\n  @@map("verification")\n}\n\nmodel Availability {\n  id      String @id @default(uuid())\n  tutorId String\n\n  day       String\n  startTime DateTime\n  endTime   DateTime\n\n  isBooked Boolean @default(false)\n\n  tutor Tutor @relation(fields: [tutorId], references: [id], onDelete: Cascade)\n}\n\nmodel Booking {\n  id String @id @default(uuid())\n\n  studentId  String\n  tutorId    String\n  categoryId String\n\n  date      DateTime\n  startTime DateTime\n  endTime   DateTime\n\n  status BookingStatus @default(CONFIRMED)\n\n  tutor    Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n\n  review    Review?\n  createdAt DateTime @default(now())\n}\n\nenum BookingStatus {\n  CONFIRMED\n  COMPLETED\n  CANCELLED\n}\n\nmodel Category {\n  id          String  @id @default(uuid())\n  name        String  @unique\n  description String?\n\n  tutors   TutorSubject[]\n  bookings Booking[]\n\n  createdAt DateTime @default(now())\n}\n\nmodel Review {\n  id String @id @default(uuid())\n\n  bookingId String @unique\n  studentId String\n  tutorId   String\n\n  rating  Int\n  comment String?\n\n  booking Booking @relation(fields: [bookingId], references: [id])\n  tutor   Tutor   @relation(fields: [tutorId], references: [id], onDelete: Cascade)\n\n  createdAt DateTime @default(now())\n}\n\n// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = "prisma-client"\n  output   = "../../generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel Tutor {\n  id         String  @id @default(uuid())\n  userId     String  @unique\n  bio        String?\n  hourlyRate Float\n  experience Int?\n  isFeatured Boolean @default(false)\n\n  subjects     TutorSubject[]\n  availability Availability[]\n  reviews      Review[]\n  bookings     Booking[]\n\n  ratingAvg Float @default(0)\n\n  createdAt DateTime @default(now())\n}\n\nmodel TutorSubject {\n  id String @id @default(uuid())\n\n  tutorId    String\n  categoryId String\n\n  tutor    Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n\n  @@unique([tutorId, categoryId])\n}\n',
+  "inlineSchema": 'model User {\n  id            String    @id\n  name          String\n  email         String\n  emailVerified Boolean   @default(false)\n  image         String?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  sessions      Session[]\n  accounts      Account[]\n\n  role   String  @default("STUDENT")\n  phone  String?\n  status String? @default("ACTIVE")\n\n  @@unique([email])\n  @@map("user")\n}\n\nmodel Session {\n  id        String   @id\n  expiresAt DateTime\n  token     String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  ipAddress String?\n  userAgent String?\n  userId    String\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([token])\n  @@index([userId])\n  @@map("session")\n}\n\nmodel Account {\n  id                    String    @id\n  accountId             String\n  providerId            String\n  userId                String\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n\n  @@index([userId])\n  @@map("account")\n}\n\nmodel Verification {\n  id         String   @id\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@index([identifier])\n  @@map("verification")\n}\n\nmodel Availability {\n  id      String @id @default(uuid())\n  tutorId String\n\n  day       String\n  startTime DateTime\n  endTime   DateTime\n\n  isBooked Boolean @default(false)\n\n  tutor Tutor @relation(fields: [tutorId], references: [id], onDelete: Cascade)\n}\n\nmodel Booking {\n  id String @id @default(uuid())\n\n  studentId  String\n  tutorId    String\n  categoryId String\n\n  date      DateTime\n  startTime DateTime\n  endTime   DateTime\n\n  status BookingStatus @default(CONFIRMED)\n\n  tutor    Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n\n  review    Review?\n  createdAt DateTime @default(now())\n}\n\nenum BookingStatus {\n  CONFIRMED\n  COMPLETED\n  CANCELLED\n}\n\nmodel Category {\n  id          String  @id @default(uuid())\n  name        String  @unique\n  description String?\n\n  tutors   TutorSubject[]\n  bookings Booking[]\n\n  createdAt DateTime @default(now())\n}\n\nmodel Review {\n  id String @id @default(uuid())\n\n  bookingId String @unique\n  studentId String\n  tutorId   String\n\n  rating  Int\n  comment String?\n\n  booking Booking @relation(fields: [bookingId], references: [id])\n  tutor   Tutor   @relation(fields: [tutorId], references: [id], onDelete: Cascade)\n\n  createdAt DateTime @default(now())\n}\n\n// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = "prisma-client"\n  output   = "../../generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel Tutor {\n  id         String  @id @default(uuid())\n  userId     String  @unique\n  bio        String?\n  hourlyRate Float\n  experience Int?\n  isFeatured Boolean @default(false)\n\n  subjects     TutorSubject[]\n  availability Availability[]\n  reviews      Review[]\n  bookings     Booking[]\n\n  ratingAvg Float @default(0)\n\n  createdAt DateTime @default(now())\n}\n\nmodel TutorSubject {\n  id String @id @default(uuid())\n\n  tutorId    String\n  categoryId String\n\n  tutor    Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n\n  @@unique([tutorId, categoryId])\n}\n',
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -81,15 +81,19 @@ var prisma = new PrismaClient({ adapter });
 
 // src/lib/auth.ts
 var auth = betterAuth({
+  baseURL: process.env.SERVER_URL || "https://skillbridge-server-xi.vercel.app",
   database: prismaAdapter(prisma, {
     provider: "postgresql"
   }),
-  trustedOrigins: ["http://localhost:3000", "https://skillbridge.vercel.app"],
+  trustedOrigins: [
+    "http://localhost:3000",
+    "https://skillbridge-client-iota.vercel.app"
+  ],
   user: {
     additionalFields: {
       role: {
         type: "string",
-        defaultValue: "USER",
+        defaultValue: "STUDENT",
         required: true
       },
       phone: {
@@ -108,6 +112,26 @@ var auth = betterAuth({
       accessType: "offline",
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET
+    }
+  },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60
+    }
+  },
+  advanced: {
+    cookiePrefix: "better-auth",
+    useSecureCookies: true,
+    crossSubDomainCookies: {
+      enabled: false
+    },
+    disableCSRFCheck: true,
+    defaultCookieAttributes: {
+      sameSite: "none",
+      secure: true,
+      httpOnly: true,
+      partitioned: true
     }
   },
   emailAndPassword: {
@@ -379,7 +403,8 @@ var auth2 = (...roles) => {
         role: session.user.role,
         emailVerified: session.user.emailVerified
       };
-      if (roles.length && !roles.includes(req.user.role)) {
+      const userRole = session.user.role.toUpperCase();
+      if (roles.length && !roles.includes(userRole)) {
         return res.status(403).json({
           success: false,
           message: "Forbidden! You don't have permission to access this resource."
@@ -397,8 +422,8 @@ var auth_default = auth2;
 var router = Router();
 router.get("/", tutorController.getAllTutors);
 router.get("/:id", tutorController.getTutorById);
-router.post("/", auth_default("USER" /* USER */), tutorController.createTutor);
-router.put("/profile", auth_default("USER" /* USER */), tutorController.updateProfile);
+router.post("/", auth_default("TUTOR" /* TUTOR */, "ADMIN" /* ADMIN */), tutorController.createTutor);
+router.put("/profile", auth_default("TUTOR" /* TUTOR */, "ADMIN" /* ADMIN */), tutorController.updateProfile);
 var tutorRouter = router;
 
 // src/modules/category/category.route.ts
@@ -920,129 +945,8 @@ router4.patch(
 );
 var bookingRouter = router4;
 
-// src/modules/tutorSubject/tutorSubject.route.ts
-import { Router as Router5 } from "express";
-
-// src/modules/tutorSubject/tutorSubject.service.ts
-var addSubject = async (userId, categoryId) => {
-  const tutor = await prisma.tutor.findUnique({
-    where: { userId }
-  });
-  if (!tutor) {
-    throw new Error("Tutor profile not found. Please create a profile first.");
-  }
-  const existingSubject = await prisma.tutorSubject.findUnique({
-    where: {
-      tutorId_categoryId: {
-        tutorId: tutor.id,
-        categoryId
-      }
-    }
-  });
-  if (existingSubject) {
-    throw new Error("You have already added this subject to your profile.");
-  }
-  return await prisma.tutorSubject.create({
-    data: {
-      tutorId: tutor.id,
-      categoryId
-    },
-    include: {
-      category: true
-    }
-  });
-};
-var removeSubject = async (userId, categoryId) => {
-  const tutor = await prisma.tutor.findUnique({
-    where: { userId }
-  });
-  if (!tutor) {
-    throw new Error("Tutor profile not found.");
-  }
-  const existingSubject = await prisma.tutorSubject.findUnique({
-    where: {
-      tutorId_categoryId: {
-        tutorId: tutor.id,
-        categoryId
-      }
-    }
-  });
-  if (!existingSubject) {
-    throw new Error("This subject is not attached to your profile.");
-  }
-  return await prisma.tutorSubject.delete({
-    where: {
-      tutorId_categoryId: {
-        tutorId: tutor.id,
-        categoryId
-      }
-    }
-  });
-};
-var tutorSubjectService = {
-  addSubject,
-  removeSubject
-};
-
-// src/modules/tutorSubject/tutorSubject.controller.ts
-var addSubject2 = async (req, res, next) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ success: false, message: "Unauthorized!" });
-    }
-    const { categoryId } = req.body;
-    if (!categoryId) {
-      return res.status(400).json({ success: false, message: "categoryId is required." });
-    }
-    const result = await tutorSubjectService.addSubject(
-      req.user.id,
-      categoryId
-    );
-    res.status(201).json({
-      success: true,
-      message: "Subject added to your profile successfully.",
-      data: result
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-var removeSubject2 = async (req, res, next) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ success: false, message: "Unauthorized!" });
-    }
-    const { categoryId } = req.query;
-    const categoryString = typeof categoryId === "string" ? categoryId : void 0;
-    if (!categoryString) {
-      return res.status(400).json({ success: false, message: "categoryId is required." });
-    }
-    const result = await tutorSubjectService.removeSubject(
-      req.user.id,
-      categoryString
-    );
-    res.status(200).json({
-      success: true,
-      message: "Subject removed from your profile successfully.",
-      data: result
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-var tutorSubjectController = {
-  addSubject: addSubject2,
-  removeSubject: removeSubject2
-};
-
-// src/modules/tutorSubject/tutorSubject.route.ts
-var router5 = Router5();
-router5.post("/", auth_default("USER" /* USER */, "TUTOR" /* TUTOR */), tutorSubjectController.addSubject);
-router5.delete("/:categoryId", auth_default("TUTOR" /* TUTOR */), tutorSubjectController.removeSubject);
-var tutorSubjectRouter = router5;
-
 // src/modules/review/review.route.ts
-import { Router as Router6 } from "express";
+import { Router as Router5 } from "express";
 
 // src/modules/review/review.service.ts
 var createReview = async (studentId, payload) => {
@@ -1173,21 +1077,176 @@ var reviewController = {
 };
 
 // src/modules/review/review.route.ts
-var router6 = Router6();
-router6.get("/tutor/:tutorId", reviewController.getTutorReviews);
-router6.post(
+var router5 = Router5();
+router5.get("/tutor/:tutorId", reviewController.getTutorReviews);
+router5.post(
   "/",
-  auth_default("USER" /* USER */, "STUDENT" /* STUDENT */),
+  auth_default("STUDENT" /* STUDENT */),
   reviewController.createReview
 );
-var reviewRouter = router6;
+var reviewRouter = router5;
+
+// src/modules/tutorSubject/tutorSubject.route.ts
+import { Router as Router6 } from "express";
+
+// src/modules/tutorSubject/tutorSubject.service.ts
+var addSubject = async (userId, categoryId) => {
+  const tutor = await prisma.tutor.findUnique({
+    where: { userId }
+  });
+  if (!tutor) {
+    throw new Error("Tutor profile not found. Please create a profile first.");
+  }
+  const existingSubject = await prisma.tutorSubject.findUnique({
+    where: {
+      tutorId_categoryId: {
+        tutorId: tutor.id,
+        categoryId
+      }
+    }
+  });
+  if (existingSubject) {
+    throw new Error("You have already added this subject to your profile.");
+  }
+  return await prisma.tutorSubject.create({
+    data: {
+      tutorId: tutor.id,
+      categoryId
+    },
+    include: {
+      category: true
+    }
+  });
+};
+var removeSubject = async (userId, categoryId) => {
+  const tutor = await prisma.tutor.findUnique({
+    where: { userId }
+  });
+  if (!tutor) {
+    throw new Error("Tutor profile not found.");
+  }
+  const existingSubject = await prisma.tutorSubject.findUnique({
+    where: {
+      tutorId_categoryId: {
+        tutorId: tutor.id,
+        categoryId
+      }
+    }
+  });
+  if (!existingSubject) {
+    throw new Error("This subject is not attached to your profile.");
+  }
+  return await prisma.tutorSubject.delete({
+    where: {
+      tutorId_categoryId: {
+        tutorId: tutor.id,
+        categoryId
+      }
+    }
+  });
+};
+var tutorSubjectService = {
+  addSubject,
+  removeSubject
+};
+
+// src/modules/tutorSubject/tutorSubject.controller.ts
+var addSubject2 = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Unauthorized!" });
+    }
+    const { categoryId } = req.body;
+    if (!categoryId) {
+      return res.status(400).json({ success: false, message: "categoryId is required." });
+    }
+    const result = await tutorSubjectService.addSubject(
+      req.user.id,
+      categoryId
+    );
+    res.status(201).json({
+      success: true,
+      message: "Subject added to your profile successfully.",
+      data: result
+    });
+  } catch (error) {
+    const errMsg = error?.message || "";
+    if (typeof errMsg === "string" && (errMsg.includes("Tutor profile not found") || errMsg.includes("already added"))) {
+      return res.status(400).json({ success: false, message: errMsg });
+    }
+    if (error?.code === "P2003") {
+      return res.status(400).json({ success: false, message: "Invalid categoryId provided." });
+    }
+    next(error);
+  }
+};
+var removeSubject2 = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Unauthorized!" });
+    }
+    const { categoryId } = req.query;
+    const categoryString = typeof categoryId === "string" ? categoryId : void 0;
+    if (!categoryString) {
+      return res.status(400).json({ success: false, message: "categoryId is required." });
+    }
+    const result = await tutorSubjectService.removeSubject(
+      req.user.id,
+      categoryString
+    );
+    res.status(200).json({
+      success: true,
+      message: "Subject removed from your profile successfully.",
+      data: result
+    });
+  } catch (error) {
+    const errMsg = error?.message || "";
+    if (typeof errMsg === "string" && (errMsg.includes("Tutor profile not found") || errMsg.includes("not attached"))) {
+      return res.status(400).json({ success: false, message: errMsg });
+    }
+    next(error);
+  }
+};
+var tutorSubjectController = {
+  addSubject: addSubject2,
+  removeSubject: removeSubject2
+};
+
+// src/modules/tutorSubject/tutorSubject.route.ts
+var router6 = Router6();
+router6.post(
+  "/",
+  auth_default("ADMIN" /* ADMIN */, "TUTOR" /* TUTOR */),
+  tutorSubjectController.addSubject
+);
+router6.delete(
+  "/:categoryId",
+  auth_default("TUTOR" /* TUTOR */, "ADMIN" /* ADMIN */),
+  tutorSubjectController.removeSubject
+);
+var tutorSubjectRouter = router6;
 
 // src/app.ts
 var app = express();
+var allowedOrigins = [
+  "http://localhost:3000",
+  "https://skillbridge-client-iota.vercel.app"
+].filter(Boolean);
 app.use(
   cors({
-    origin: process.env.APP_URL || "http://localhost:4000",
-    credentials: true
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const isAllowed = allowedOrigins.includes(origin) || /^https:\/\/next-blog-client.*\.vercel\.app$/.test(origin) || /^https:\/\/.*\.vercel\.app$/.test(origin);
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+    exposedHeaders: ["Set-Cookie"]
   })
 );
 app.use(express.json());

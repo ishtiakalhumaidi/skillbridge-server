@@ -8,7 +8,7 @@ router.get("/", tutorController.getAllTutors);
 router.get("/:id", tutorController.getTutorById);
 
 
-router.post("/", auth(UserRole.USER), tutorController.createTutor);
-router.put("/profile", auth(UserRole.USER), tutorController.updateProfile);
+router.post("/", auth(UserRole.TUTOR, UserRole.ADMIN), tutorController.createTutor);
+router.patch("/profile", auth(UserRole.TUTOR, UserRole.ADMIN), tutorController.updateProfile);
 
 export const tutorRouter = router;

@@ -10,7 +10,7 @@ router.get("/stats", auth(UserRole.ADMIN), adminController.getPlatformStats);
 
 router.get("/users", auth(UserRole.ADMIN), adminController.getAllUsers);
 router.patch("/users/:id/status", auth(UserRole.ADMIN), adminController.updateUserStatus);
-
+router.patch("/users/:id/role", auth(UserRole.ADMIN), adminController.updateUserRole);
 
 router.get("/bookings", auth(UserRole.ADMIN), adminController.getAllBookings);
 

@@ -25,7 +25,7 @@ async function seedAdmin() {
 
     console.log("*********** Calling signup API ********");
     const signUpAdmin = await fetch(
-      `http://localhost:5000/api/auth/sign-up/email`,
+      `${process.env.BACKEND_URL}/api/auth/sign-up/email`,
       {
         method: "POST",
         headers: {

@@ -22,9 +22,14 @@ const updateTutorProfile = async (
   userId: string,
   data: Partial<Omit<Tutor, "id" | "createdAt" | "userId">>,
 ) => {
-  return await prisma.tutor.update({
+  return await prisma.tutor.upsert({
     where: { userId },
-    data,
+    update: data,
+    create: {
+      userId,
+      hourlyRate: 0, 
+      ...data,
+    },
   });
 };
 

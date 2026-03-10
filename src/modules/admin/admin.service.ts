@@ -146,10 +146,41 @@ const getAllBookings = async (payload: {
     },
   };
 };
+const updateUserRole = async (id: string, role: string) => {
+  return await prisma.$transaction(async (tx) => {
+  
+    const user = await tx.user.update({
+      where: { id },
+      data: { role: role as any }, 
+      select: { id: true, name: true, email: true, role: true, status: true },
+    });
+
+
+    if (role === "TUTOR") {
+      const existingTutor = await tx.tutor.findUnique({
+        where: { userId: id },
+      });
+
+      if (!existingTutor) {
+        await tx.tutor.create({
+          data: {
+            userId: id,
+            headline: "New Tutor", 
+            bio: "Please update your bio.",
+            hourlyRate: 0,
+          },
+        });
+      }
+    }
+
+    return user;
+  });
+};
 
 export const adminService = {
   getPlatformStats,
   getAllUsers,
   updateUserStatus,
   getAllBookings,
+  updateUserRole
 };

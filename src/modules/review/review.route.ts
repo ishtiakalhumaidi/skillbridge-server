@@ -8,7 +8,7 @@ router.get("/tutor/:tutorId", reviewController.getTutorReviews);
 
 router.post(
   "/",
-  auth(UserRole.USER, UserRole.STUDENT),
+  auth( UserRole.STUDENT),
   reviewController.createReview,
 );
 

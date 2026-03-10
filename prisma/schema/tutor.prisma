@@ -2,6 +2,7 @@ model Tutor {
   id         String  @id @default(uuid())
   userId     String  @unique
   bio        String?
+  headline   String?
   hourlyRate Float
   experience Int?
   isFeatured Boolean @default(false)
