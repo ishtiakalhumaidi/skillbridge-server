@@ -1,4 +1,4 @@
-import { betterAuth } from "better-auth";
+import { APIError, betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 
@@ -8,6 +8,8 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   trustedOrigins: [
+    "https://skillbridge-server-xi.vercel.app",
+    "https://skillbridge-iah.vercel.app",
     "http://localhost:3000",
     "https://skillbridge-client-iota.vercel.app",
   ],
@@ -36,7 +38,7 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
- 
+
   session: {
     cookieCache: {
       enabled: true,
@@ -44,22 +46,38 @@ export const auth = betterAuth({
     },
   },
   advanced: {
-    cookiePrefix: "better-auth",
     useSecureCookies: true,
-    crossSubDomainCookies: {
-      enabled: false,
-    },
-    disableCSRFCheck: true,
-    
     defaultCookieAttributes: {
-      sameSite: "none",
+      sameSite: "None",
       secure: true,
       httpOnly: true,
-      partitioned: true, 
+      partitioned: true,
     },
   },
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
+  },
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+  
+          const user = await prisma.user.findUnique({
+            where: { id: session.userId },
+          });
+
+          if (user?.status === "banned") {
+            throw new APIError("UNAUTHORIZED", {
+              message:
+                "Your account has been suspended. Please contact the SkillBridge helpline.",
+            });
+          }
+
+          // Otherwise, proceed normally
+          return { data: session };
+        },
+      },
+    },
   },
 });

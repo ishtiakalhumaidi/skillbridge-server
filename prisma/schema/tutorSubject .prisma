@@ -1,12 +1,11 @@
 model TutorSubject {
-  id         String @id @default(uuid())
+  id String @id @default(uuid())
 
   tutorId    String
   categoryId String
 
-  tutor      Tutor @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  category   Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  
+  tutor    Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@unique([tutorId, categoryId])
 }

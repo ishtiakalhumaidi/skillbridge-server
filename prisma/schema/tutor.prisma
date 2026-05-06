@@ -1,6 +1,7 @@
 model Tutor {
   id         String  @id @default(uuid())
   userId     String  @unique
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   bio        String?
   headline   String?
   hourlyRate Float

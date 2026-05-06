@@ -20,5 +20,9 @@ router.patch(
   auth(UserRole.STUDENT, UserRole.TUTOR),
   bookingController.updateBookingStatus,
 );
-
+router.patch(
+  "/:id/meeting-link",
+  auth(UserRole.TUTOR),
+  bookingController.updateMeetingLink,
+);
 export const bookingRouter = router;

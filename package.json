@@ -8,7 +8,9 @@
     "dev": "npx tsx watch src/server.ts",
     "seed:admin": "npx tsx src/scripts/seedAdmin.ts",
     "build": "prisma generate && tsup src/index.ts --format esm --platform node --target node20 --outDir api --external pg-native",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "build:tsup": "tsup",
+    "stripe:webhook": "stripe listen --forward-to https://skillbridge-server-xi.vercel.app/api/v1/payments/webhook"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +33,7 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "pg": "^8.18.0",
+    "stripe": "^22.1.0",
     "tsup": "^8.5.1"
   }
 }

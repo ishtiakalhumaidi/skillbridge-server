@@ -1,25 +1,32 @@
 model Booking {
-  id String @id @default(uuid())
-
-  studentId  String 
+  id         String   @id @default(uuid())
+  studentId  String
   tutorId    String
   categoryId String
+  date       DateTime
+  startTime  DateTime
+  endTime    DateTime
 
-  date      DateTime
-  startTime DateTime
-  endTime   DateTime
-
-  status BookingStatus @default(CONFIRMED)
-
-  tutor    Tutor    @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  review Review?
-  createdAt DateTime @default(now())
+  status          BookingStatus @default(PENDING) // Changed default to PENDING
+  paymentStatus   PaymentStatus @default(UNPAID)
+  stripeSessionId String?       @unique
+  pricePaid       Float?
+  meetingLink     String?
+  tutor           Tutor         @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  category        Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  review          Review?
+  createdAt       DateTime      @default(now())
 }
 
 enum BookingStatus {
+  PENDING
   CONFIRMED
   COMPLETED
   CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
 }

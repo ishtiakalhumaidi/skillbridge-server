@@ -1,6 +1,6 @@
 model Availability {
-  id        String   @id @default(uuid())
-  tutorId   String
+  id      String @id @default(uuid())
+  tutorId String
 
   day       String
   startTime DateTime

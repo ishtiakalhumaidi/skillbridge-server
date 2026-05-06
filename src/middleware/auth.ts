@@ -43,6 +43,8 @@ const auth = (...roles: UserRole[]) => {
 
       const userRole = session.user.role.toUpperCase() as UserRole;
 
+      console.log(userRole);
+
       if (roles.length && !roles.includes(userRole)) {
         return res.status(403).json({
           success: false,

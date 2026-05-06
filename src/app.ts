@@ -9,12 +9,16 @@ import { bookingRouter } from "./modules/booking/booking.router";
 import { reviewRouter } from "./modules/review/review.route";
 import { tutorSubjectRouter } from "./modules/tutorSubject/tutorSubject.route";
 import { adminRouter } from "./modules/admin/admin.route";
+import { globalErrorHandler } from "./middleware/globalErrorHandler";
+import { paymentRouter } from "./modules/payment/payment.route";
+import { paymentController } from "./modules/payment/payment.controller";
 
 const app: Application = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
   "https://skillbridge-client-iota.vercel.app",
+  "https://skillbridge-iah.vercel.app",
 ].filter(Boolean);
 
 app.use(
@@ -38,7 +42,11 @@ app.use(
     exposedHeaders: ["Set-Cookie"],
   }),
 );
-
+app.post(
+  "/api/v1/payments/webhook",
+  express.raw({ type: "application/json" }),
+  paymentController.stripeWebhook,
+);
 app.use(express.json());
 
 app.all("/api/auth/{*any}", toNodeHandler(auth));
@@ -50,9 +58,10 @@ app.use("/api/v1/bookings", bookingRouter);
 app.use("/api/v1/tutor-subjects", tutorSubjectRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/payments", paymentRouter);
 
 app.get("/", (req, res) => {
   res.send("SkillBridge web is cooking...");
 });
-
+app.use(globalErrorHandler);
 export default app;

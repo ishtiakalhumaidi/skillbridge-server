@@ -1,5 +1,5 @@
 model Review {
-  id        String @id @default(uuid())
+  id String @id @default(uuid())
 
   bookingId String @unique
   studentId String
