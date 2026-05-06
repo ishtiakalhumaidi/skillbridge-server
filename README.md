@@ -6,7 +6,7 @@ This is the backend server for **SkillBridge**, a full-stack web application tha
 
 ## 🔗 Project Links
 
-- **Frontend GitHub Repository:** [https://github.com/ishtiakalhumaidi/skillbridge-client.git](hhttps://github.com/ishtiakalhumaidi/skillbridge-client.git)
+- **Frontend GitHub Repository:** [https://github.com/ishtiakalhumaidi/skillbridge-client.git](https://github.com/ishtiakalhumaidi/skillbridge-client.git)
 - **Live Website:** [SkillBridge](https://skillbridge-iah.vercel.app/)
 - **Backend Live API:** [https://skillbridge-server-xi.vercel.app/](https://skillbridge-server-xi.vercel.app/)
 
