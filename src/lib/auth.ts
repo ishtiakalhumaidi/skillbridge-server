@@ -1,9 +1,10 @@
 import { APIError, betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
-
+const BACKEND_URL = process.env.SERVER_URL || "https://skillbridge-server-xi.vercel.app";
+const APP_URL = process.env.APP_URL || "https://skillbridge-iah.vercel.app";
 export const auth = betterAuth({
-  baseURL: process.env.SERVER_URL || "https://skillbridge-server-xi.vercel.app",
+  baseURL: BACKEND_URL,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -36,6 +37,7 @@ export const auth = betterAuth({
       accessType: "offline",
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      redirectURI: `${APP_URL}/api/auth/callback/google`
     },
   },
 
@@ -48,7 +50,7 @@ export const auth = betterAuth({
   advanced: {
     useSecureCookies: true,
     defaultCookieAttributes: {
-      sameSite: "None",
+      sameSite: "lax",
       secure: true,
       httpOnly: true,
       partitioned: true,

@@ -54,6 +54,21 @@ const getTutorAvailabilityPublic = async (req: Request, res: Response, next: Nex
     next(error);
   }
 };
+const createBulkAvailability = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) return res.status(401).json({ success: false, message: "Unauthorized!" });
+    const { dates, startTime, endTime } = req.body;
+
+    if (!dates || !dates.length || !startTime || !endTime) {
+      return res.status(400).json({ success: false, message: "Missing required fields." });
+    }
+
+    const result = await availabilityService.createBulkAvailability(req.user.id, dates, startTime, endTime);
+    res.status(201).json({ success: true, message: "Slots generated successfully.", data: result });
+  } catch (error: any) {
+    next(error);
+  }
+};
 
 const deleteAvailability = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -82,4 +97,5 @@ export const availabilityController = {
   getMyAvailability,
   getTutorAvailabilityPublic,
   deleteAvailability,
+  createBulkAvailability,
 };

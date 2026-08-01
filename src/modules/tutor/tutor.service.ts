@@ -132,8 +132,11 @@ const getTutorById = async (id: string) => {
     include: {
       subjects: { include: { category: true } },
       availability: {
-        where: { isBooked: false },
-        orderBy: [{ day: "asc" }, { startTime: "asc" }],
+        where: { date: { gte: new Date(new Date().setHours(0, 0, 0, 0)) } },
+        orderBy: [{ date: "asc" }, { startTime: "asc" }],
+      },
+      bookings: {
+        where: { date: { gte: new Date(new Date().setHours(0, 0, 0, 0)) } }
       },
       reviews: {
         orderBy: { createdAt: "desc" },
@@ -163,10 +166,57 @@ const getTutorById = async (id: string) => {
     reviews: enrichedReviews,
   };
 };
+const getTutorAnalytics = async (userId: string) => {
+  const tutor = await prisma.tutor.findUniqueOrThrow({ where: { userId } });
 
+  // 1. Calculate the start date (12 months ago, from the 1st of that month)
+  const now = new Date();
+  const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+
+  // 2. Fetch only completed & paid bookings from the last 12 months
+  const bookings = await prisma.booking.findMany({
+    where: {
+      tutorId: tutor.id,
+      status: "COMPLETED",
+      paymentStatus: "PAID",
+      date: { gte: twelveMonthsAgo }
+    },
+    select: {
+      date: true,
+      pricePaid: true,
+    }
+  });
+
+  // 3. Build the 12-month skeleton array
+  const monthlyData:any[] = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    monthlyData.push({
+      name: d.toLocaleString('en-US', { month: 'short' }), // e.g., "Jan", "Feb"
+      year: d.getFullYear(),
+      revenue: 0,
+      sessions: 0
+    });
+  }
+
+  // 4. Fill the skeleton with actual database data
+  bookings.forEach((b) => {
+    const bMonth = b.date.toLocaleString('en-US', { month: 'short' });
+    const bYear = b.date.getFullYear();
+    
+    const bucket = monthlyData.find(m => m.name === bMonth && m.year === bYear);
+    if (bucket) {
+      bucket.sessions += 1;
+      bucket.revenue += (b.pricePaid || 0);
+    }
+  });
+
+  return monthlyData;
+};
 export const tutorService = {
   createTutor,
   updateTutorProfile,
   getAllTutors,
   getTutorById,
+  getTutorAnalytics,
 };

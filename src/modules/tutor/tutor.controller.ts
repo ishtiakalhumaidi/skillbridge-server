@@ -105,10 +105,25 @@ const getTutorById = async (
     next(error);
   }
 };
+const getTutorAnalytics = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) return res.status(401).json({ success: false, message: "Unauthorized!" });
 
+    const result = await tutorService.getTutorAnalytics(req.user.id as string);
+
+    res.status(200).json({
+      success: true,
+      message: "Analytics retrieved successfully.",
+      data: result,
+    });
+  } catch (error: any) {
+    next(error);
+  }
+};
 export const tutorController = {
   createTutor,
   updateProfile,
   getAllTutors,
   getTutorById,
+  getTutorAnalytics,
 };

@@ -14,11 +14,14 @@ router.post(
   auth(UserRole.TUTOR),
   availabilityController.createAvailability,
 );
+router.post("/bulk", auth(UserRole.TUTOR), availabilityController.createBulkAvailability);
 router.get(
   "/my-availability",
   auth(UserRole.TUTOR),
   availabilityController.getMyAvailability,
 );
+
+
 router.delete(
   "/:id",
   auth(UserRole.TUTOR),

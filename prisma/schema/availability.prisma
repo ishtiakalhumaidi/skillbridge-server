@@ -2,11 +2,14 @@ model Availability {
   id      String @id @default(uuid())
   tutorId String
 
-  day       String
+  date      DateTime  
+  
   startTime DateTime
   endTime   DateTime
 
   isBooked Boolean @default(false)
 
   tutor Tutor @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+
+  @@unique([tutorId, date, startTime])
 }

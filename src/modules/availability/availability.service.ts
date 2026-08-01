@@ -3,7 +3,7 @@ import type { Prisma } from "../../../generated/prisma/client";
 
 const createAvailability = async (
   userId: string,
-  data: { day: string; startTime: string; endTime: string }
+  data: { day: string; startTime: string; endTime: string },
 ) => {
   // 1. Find the actual Tutor profile using the Better Auth userId
   const tutor = await prisma.tutor.findUnique({
@@ -18,7 +18,7 @@ const createAvailability = async (
   return await prisma.availability.create({
     data: {
       tutorId: tutor.id,
-      day: data.day,
+      date: new Date(data.day),
       startTime: new Date(data.startTime),
       endTime: new Date(data.endTime),
     },
@@ -31,28 +31,51 @@ const getMyAvailability = async (userId: string) => {
   });
 
   return await prisma.availability.findMany({
-    where: { tutorId: tutor.id },
-    orderBy: [
-      { day: "asc" },
-      { startTime: "asc" },
-    ],
+    where: {
+      tutorId: tutor.id,
+
+      date: { gte: new Date(new Date().setDate(new Date().getDate() - 1)) },
+    },
+    orderBy: [{ date: "asc" }, { startTime: "asc" }],
   });
 };
 
 const getTutorAvailabilityPublic = async (tutorId: string) => {
-  // Students only need to see slots that haven't been booked yet
   return await prisma.availability.findMany({
     where: {
       tutorId: tutorId,
-      isBooked: false, 
+      date: { gte: new Date(new Date().setHours(0, 0, 0, 0)) },
     },
-    orderBy: [
-      { day: "asc" },
-      { startTime: "asc" },
-    ],
+    orderBy: [{ date: "asc" }, { startTime: "asc" }],
   });
 };
+const createBulkAvailability = async (
+  userId: string,
+  dates: string[],
+  startTime: string,
+  endTime: string,
+) => {
+  const tutor = await prisma.tutor.findUniqueOrThrow({ where: { userId } });
 
+  const data = dates.map((dateStr) => {
+    const start = new Date(`1970-01-01T${startTime}:00Z`);
+    const end = new Date(`1970-01-01T${endTime}:00Z`);
+
+    return {
+      tutorId: tutor.id,
+      date: new Date(dateStr),
+      startTime: start,
+      endTime: end,
+    };
+  });
+
+  const result = await prisma.availability.createMany({
+    data,
+    skipDuplicates: true,
+  });
+
+  return result;
+};
 const deleteAvailability = async (userId: string, availabilityId: string) => {
   const tutor = await prisma.tutor.findUniqueOrThrow({
     where: { userId },
@@ -68,7 +91,9 @@ const deleteAvailability = async (userId: string, availabilityId: string) => {
   }
 
   if (slot.isBooked) {
-    throw new Error("Cannot delete a slot that is already booked by a student.");
+    throw new Error(
+      "Cannot delete a slot that is already booked by a student.",
+    );
   }
 
   return await prisma.availability.delete({
@@ -81,4 +106,5 @@ export const availabilityService = {
   getMyAvailability,
   getTutorAvailabilityPublic,
   deleteAvailability,
+  createBulkAvailability,
 };

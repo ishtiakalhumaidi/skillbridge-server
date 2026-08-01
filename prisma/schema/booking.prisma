@@ -16,6 +16,7 @@ model Booking {
   category        Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   review          Review?
   createdAt       DateTime      @default(now())
+  @@unique([tutorId, date, startTime])
 }
 
 enum BookingStatus {

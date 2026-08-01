@@ -10,10 +10,18 @@ const createBooking = async (
       where: { id: payload.availabilityId },
     });
 
+    const existingBooking = await tx.booking.findFirst({
+      where: {
+        tutorId: slot.tutorId,
+        date: new Date(payload.date),
+        startTime: slot.startTime,
+      }
+    });
 
-    if (slot.isBooked) {
+    if (existingBooking) {
       throw new Error("This time slot has already been booked by another student.");
     }
+
     const booking = await tx.booking.create({
       data: {
         studentId: studentId,
@@ -22,15 +30,10 @@ const createBooking = async (
         date: new Date(payload.date), 
         startTime: slot.startTime,
         endTime: slot.endTime,
-        status: "PENDING", // 👉 Change this from CONFIRMED to PENDING
+        status: "PENDING", 
       },
     });
 
-
-    await tx.availability.update({
-      where: { id: slot.id },
-      data: { isBooked: true },
-    });
 
     return booking;
   });
@@ -49,16 +52,22 @@ const getMyBookings = async (
     orConditions.push({ tutorId: tutorProfile.id });
   }
 
-  // 👉 Build the where clause dynamically
+  // 👉 1. Calculate the cutoff date (7 days ago at midnight)
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - 7);
+  cutoffDate.setHours(0, 0, 0, 0);
+
+  // 👉 2. Add the cutoff date to the query
   const whereCondition: Prisma.BookingWhereInput = {
     OR: orConditions,
+    date: { gte: cutoffDate }, // 🛑 The database will automatically drop anything older than 7 days!
     ...(payload.status ? { status: payload.status as BookingStatus } : {}),
   };
 
   const bookings = await prisma.booking.findMany({
     where: whereCondition,
-    take: payload.limit, // 👉 Added pagination
-    skip: payload.skip,  // 👉 Added pagination
+    take: payload.limit, 
+    skip: payload.skip,  
     orderBy: [{ date: "desc" }, { startTime: "desc" }],
     include: {
       category: true,
@@ -100,7 +109,6 @@ const getMyBookings = async (
     },
   };
 };
-
 const updateBookingStatus = async (
   bookingId: string,
   userId: string,
